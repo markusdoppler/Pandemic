@@ -6,8 +6,8 @@ import random, math, itertools, time, pickle
 (width, height) = (1000, 666)
 
 # parameters
-duration = 5 #60
-population = 20 #1000
+duration = 60 #60
+population = 80 #1000
 sick_initial = 1
 
 # HEX-colours
