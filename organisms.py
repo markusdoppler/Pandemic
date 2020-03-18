@@ -3,6 +3,7 @@
 """
 
 import math, random
+from math import sqrt
 #from PIL import Image
 #import numpy as np
 from numpy import array, dot
@@ -62,12 +63,15 @@ class Environment:
             o = Organism(random.uniform(0, self.width), random.uniform(0, self.height))
             #print(f"Created organism at ({o.x},{o.y})")
             self.organisms.append(o)
+        self.update()
 
     def update(self):
         """  """
         for i, o in enumerate(self.organisms):
             o.move()
             self.bounce_off_wall(o)
+            for j, o2 in enumerate(self.organisms[i+1:]):
+                self.collide(o, o2)
         
 
     def removeOrganism(self, organism):
@@ -88,6 +92,19 @@ class Environment:
 #			self.distances(organism)
 #			organism.update_score(self)
 #
+    def collide(self, organism1, organism2):
+        """ check if organisms collide """
+        
+        cond1 = abs(organism1.x - organism2.x) < (organism1.size + organism2.size)/sqrt(2.)
+        cond2 = abs(organism1.y - organism2.y) < (organism1.size + organism2.size)/sqrt(2.)
+        if cond1 and cond2:
+            # infect if either is sick
+            organism1.colour = (255,0,0)
+            organism2.colour = (255,0,0)
+            # swap angles
+            organism2.angle, organism1.angle = (organism1.angle, organism2.angle)
+
+
     def bounce_off_wall(self,organism):
         """ check if (x,y) is off the screen, bounce off limits"""
 
