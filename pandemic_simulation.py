@@ -1,6 +1,12 @@
 import pygame as pg
-from organisms import Organism, Environment
+from environment import Environment
+from organisms import Organism, Health
 import random, math, itertools, time, pickle
+
+# plotting
+import matplotlib.pyplot as plt
+from scipy import asarray as ar,exp
+import numpy as np
 
 # size of window
 (width, height) = (1000, 666)
@@ -38,6 +44,12 @@ pg.init()
 start_time = time.time()
 current_time = time.time()
 
+i = 0
+s = 0
+x            = ar([])
+y_contageous = ar([])
+y_sick       = ar([])
+y_healed     = ar([])
 while current_time - start_time < duration:
     pg.init()
 
@@ -58,27 +70,34 @@ while current_time - start_time < duration:
 
     pg.display.flip()
     current_time = time.time()
-    environment.time_elapsed = int(round((current_time - start_time)*1000))
+    time_elapsed = int(round((current_time - start_time)*1000))
+    environment.time_elapsed = time_elapsed
+
+    if s < math.floor(current_time - start_time):
+        # data for plotting
+        x = np.append(x, s)
+        ov = environment.health_overview()
+        #print(ov)
+        y_contageous = np.append(y_contageous, ov[Health.contageous])
+        y_sick       = np.append(y_sick, ov[Health.sick])
+        y_healed     = np.append(y_healed, ov[Health.healed])
+            
+    s = math.floor(current_time - start_time)
+    i+=1
+print(i)
+
+fig, ax = plt.subplots()
+plt.plot(x,y_contageous,'ro:',label='contageous')
+plt.plot(x,y_sick,'bo:',label='sick')
+plt.plot(x,y_healed,'go:',label='healed')
+plt.legend()
+plt.show()
+
 
 
 
 #pg.draw.line(screen, p.colour, (int(p.x), int(p.y)), (int(p.x)+p.distance_front*math.sin(angle),int(p.y)+p.distance_front*math.cos(angle)))
 #screen.blit(header, headerRect)
-
-#for i in range(0,10):
-#
-#    p = sorted_list[i]
-#
-#    leader_x = 800 + 75
-#    leader_y = 80 + i*35
-#
-#    numberplate = basicfont.render(str(i+1), True, BLACK, WHITE)
-#    numberRect = numberplate.get_rect()   
-#    numberRect.center = (leader_x - 10, leader_y)
-#    screen.blit(numberplate, numberRect)
-#
-#    pg.draw.circle(screen, p.colour, (leader_x + 20, leader_y), p.size, p.thickness)
-
 
 
 # infinite loop that stops on key press
