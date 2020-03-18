@@ -1,3 +1,15 @@
+"""
+    Simulates a pandemic using pygame
+    
+    
+    TODOs:
+    -( ): fix bug of clogged organisms
+    -( ): change plot to histogram
+    -( ):
+    
+    
+"""
+
 import pygame as pg
 from environment import Environment
 from organisms import Organism, Health
@@ -22,7 +34,6 @@ WHITE = (255,255,255)
 GREY = (230,230,230)
 BLUE = (0,0,255)
 BLACK = (0,0,0)
-
 
 
 environment = Environment((width, height))
