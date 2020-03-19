@@ -24,8 +24,8 @@ import numpy as np
 (width, height) = (1000, 666)
 
 # parameters
-duration = 60 #60
-population = 80 #1000
+duration = 120
+population = 60 #1000
 sick_initial = 1
 
 # HEX-colours
@@ -36,8 +36,8 @@ BLUE = (0,0,255)
 BLACK = (0,0,0)
 
 
-environment = Environment((width, height))
-environment.addOrganisms(population)
+environment = Environment((width, height), restriction=0.25)
+environment.add_organisms(population)
 
 #pygame
 pg.init()
@@ -58,6 +58,8 @@ current_time = time.time()
 i = 0
 s = 0
 x            = ar([])
+y_healthy    = ar([])
+y_infected   = ar([])
 y_contageous = ar([])
 y_sick       = ar([])
 y_healed     = ar([])
@@ -84,26 +86,39 @@ while current_time - start_time < duration:
     time_elapsed = int(round((current_time - start_time)*1000))
     environment.time_elapsed = time_elapsed
 
-    if s < math.floor(current_time - start_time):
+    if s <= math.floor(current_time - start_time):
         # data for plotting
         x = np.append(x, s)
         ov = environment.health_overview()
         #print(ov)
+        y_healthy    = np.append(y_healthy,    ov[Health.healthy])
+        y_infected   = np.append(y_infected,   ov[Health.infected])
         y_contageous = np.append(y_contageous, ov[Health.contageous])
-        y_sick       = np.append(y_sick, ov[Health.sick])
-        y_healed     = np.append(y_healed, ov[Health.healed])
-            
+        y_sick       = np.append(y_sick,       ov[Health.sick])
+        y_healed     = np.append(y_healed,     ov[Health.healed])
+        
     s = math.floor(current_time - start_time)
     i+=1
 print(i)
 
+# stack plot
+y = np.vstack([y_healed, y_sick, y_contageous, y_infected, y_healthy])
+labels = ["Healed", "Symptoms", "Contageous", "Infected", "Healthy"]
+
 fig, ax = plt.subplots()
-plt.plot(x,y_contageous,'ro:',label='contageous')
-plt.plot(x,y_sick,'bo:',label='sick')
-plt.plot(x,y_healed,'go:',label='healed')
-plt.legend()
+ax.stackplot(x, y_healed, y_sick, y_contageous, y_infected, y_healthy, labels=labels)
+ax.legend(loc='upper left')
 plt.show()
 
+
+
+# normal plot
+#fig, ax = plt.subplots()
+#plt.plot(x,y_contageous,'ro:',label='contageous')
+#plt.plot(x,y_sick,'bo:',label='sick')
+#plt.plot(x,y_healed,'go:',label='healed')
+#plt.legend()
+#plt.show()
 
 
 

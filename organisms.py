@@ -32,10 +32,10 @@ class Organism:
        self.size = 6 
        self.thickness = self.size
        self.angle = random.uniform(0, 360)
-       self.colour = (0,100,100)#color_for_health(self.health)
+       self.colour = (0, 0, 0)#color_for_health(self.health)
 
 
-    def move(self):
+    def update_position(self):
        """ Update position based on speed and angle """
  		
        self.x += math.sin(self.angle) * self.speed
@@ -48,7 +48,7 @@ class Organism:
         self.infection_time = infection_time
 
 
-    def updateHealth(self, time):
+    def update_health(self, time):
         """ Update the health """
 
         if self.health != Health.healthy:
