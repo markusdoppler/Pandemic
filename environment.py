@@ -3,6 +3,7 @@
 """
 
 import math, random
+from functools import reduce
 #from PIL import Image
 #import numpy as np
 from numpy import array, dot
@@ -63,16 +64,16 @@ class Environment:
 
     def collide(self, organism1, organism2):
         """ check if organisms collide """
-        
-        match_x = abs(organism1.x - organism2.x) < (organism1.size + organism2.size)
-        match_y = abs(organism1.y - organism2.y) < (organism1.size + organism2.size)
-        if match_x and match_y:
+        distance = (organism1.x - organism2.x, organism1.y - organism2.y)
+        r = reduce(lambda x,y: math.sqrt(x**2+y**2), distance)
+        if r < organism1.size + organism2.size:
             # infect if either is sick
             if organism1.is_contageous(): organism2.infect(self.time_elapsed)
             if organism2.is_contageous(): organism1.infect(self.time_elapsed)
 
-            if organism1.speed == 0: organism2.angle = 360.0 - organism2.angle
-            elif organism2.speed == 0: organism1.angle = 360.0 - organism1.angle
+            if organism2.speed == 0:
+                organism1.angle = 360.0 - organism1.angle
+                #organism1.colour = (0,218,255)
             else:
                 # swap angles due to collision
                 organism2.angle, organism1.angle = (organism1.angle, organism2.angle)
@@ -105,9 +106,14 @@ class Environment:
         """ counts  """
         healthy, infected, contageous, sick, healed = 0,0,0,0,0
         for i, o in enumerate(self.organisms):
-            if o.health == Health.healthy:      healthy += 1
+            if   o.health == Health.healthy:    healthy += 1
             elif o.health == Health.infected:   infected += 1
             elif o.health == Health.contageous: contageous += 1
             elif o.health == Health.sick:       sick += 1
             elif o.health == Health.healed:     healed += 1
-        return {Health.healthy: healthy, Health.infected: infected, Health.contageous: contageous, Health.sick: sick, Health.healed: healed}
+        return {\
+            Health.healthy: healthy,
+            Health.infected: infected,
+            Health.contageous: contageous,
+            Health.sick: sick,
+            Health.healed: healed}

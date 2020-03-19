@@ -1,13 +1,5 @@
 """
     Simulates a pandemic using pygame
-    
-    
-    TODOs:
-    -( ): fix bug of clogged organisms
-    -( ): change plot to histogram
-    -( ):
-    
-    
 """
 
 import pygame as pg
@@ -25,7 +17,7 @@ import numpy as np
 
 # parameters
 duration = 120
-population = 60 #1000
+population = 100 #1000
 sick_initial = 1
 
 # HEX-colours
@@ -36,7 +28,7 @@ BLUE = (0,0,255)
 BLACK = (0,0,0)
 
 
-environment = Environment((width, height), restriction=0.25)
+environment = Environment((width, height), restriction=0.5)
 environment.add_organisms(population)
 
 #pygame
@@ -75,6 +67,8 @@ while current_time - start_time < duration:
     for o in environment.organisms:
         #print(f"c:{o.colour}, ({o.x},{o.y}), {o.size}, {o.thickness}")
         pg.draw.circle(screen, o.colour, (int(o.x), int(o.y)), o.size, o.thickness)
+        pg.draw.line(screen, o.colour, (int(o.x), int(o.y)), (int(o.x)+(o.size+4)*math.sin(math.pi/2 - o.angle),int(o.y)+(o.size+4)*math.cos(math.pi/2 - o.angle)), 6)
+        pg.draw.line(screen, o.colour, (int(o.x), int(o.y)), (int(o.x)+(o.size+4)*math.sin(3*math.pi/2 - o.angle),int(o.y)+(o.size+4)*math.cos(3*math.pi/2 - o.angle)), 6)
         #pg.draw.circle(screen, )
     for event in pg.event.get():
         if event.type in (pg.QUIT, pg.KEYDOWN):
@@ -91,9 +85,9 @@ while current_time - start_time < duration:
         x = np.append(x, s)
         ov = environment.health_overview()
         #print(ov)
-        y_healthy    = np.append(y_healthy,    ov[Health.healthy])
-        y_infected   = np.append(y_infected,   ov[Health.infected])
-        y_contageous = np.append(y_contageous, ov[Health.contageous])
+        y_healthy    = np.append(y_healthy,    ov[Health.healthy]+ov[Health.infected]+ov[Health.contageous])
+        #y_infected   = np.append(y_infected,   ov[Health.infected])
+        #y_contageous = np.append(y_contageous, ov[Health.contageous])
         y_sick       = np.append(y_sick,       ov[Health.sick])
         y_healed     = np.append(y_healed,     ov[Health.healed])
         
@@ -102,11 +96,18 @@ while current_time - start_time < duration:
 print(i)
 
 # stack plot
-y = np.vstack([y_healed, y_sick, y_contageous, y_infected, y_healthy])
-labels = ["Healed", "Symptoms", "Contageous", "Infected", "Healthy"]
+#y = np.vstack([y_healed, y_sick, y_contageous, y_infected, y_healthy])
+#labels = ["Healed", "Symptoms", "Contageous", "Infected", "Healthy"]
+#colours = [(26,204,80), (198,18,18), (255,239,0), (0,0,0), (150,150,150)]
+#colours = [tuple(map(lambda x: x/255, c)) for c in colours]
+y = np.vstack([y_sick, y_healed, y_healthy])
+labels = ["Sick", "Healed", "Healthy"]
+colours = [(198,18,18), (26,204,80), (150,150,150)]
+colours = [tuple(map(lambda x: x/255, c)) for c in colours]
 
 fig, ax = plt.subplots()
-ax.stackplot(x, y_healed, y_sick, y_contageous, y_infected, y_healthy, labels=labels)
+#ax.stackplot(x, y_healed, y_sick, y_contageous, y_infected, y_healthy, labels=labels, colors=colours)
+ax.stackplot(x, y_sick, y_healed, y_healthy, labels=labels, colors=colours)
 ax.legend(loc='upper left')
 plt.show()
 

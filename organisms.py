@@ -21,7 +21,7 @@ class Health(enum.Enum):
 
 class Organism:
 
-    def __init__(self, x, y, infected=False, vulnerability=True, speed=5):
+    def __init__(self, x, y, infected=False, vulnerability=True, speed=random.uniform(5-0.9*5, 5+0.9*5)):
        self.x = x
        self.y = y
        self.health = Health.healthy
@@ -32,7 +32,7 @@ class Organism:
        self.size = 6 
        self.thickness = self.size
        self.angle = random.uniform(0, 360)
-       self.colour = (0, 0, 0)#color_for_health(self.health)
+       self.colour = (150,150,150)#color_for_health(self.health)
 
 
     def update_position(self):
@@ -44,8 +44,10 @@ class Organism:
 
     def infect(self, infection_time):
         """ Infect the organism with the decease """
-        self.health = Health.infected
-        self.infection_time = infection_time
+        if self.health == Health.healthy:
+            self.health = Health.infected
+            self.infection_time = infection_time
+            self.colour = (0,0,0)
 
 
     def update_health(self, time):
@@ -55,17 +57,17 @@ class Organism:
 
             if time - self.infection_time > 14*1000:
                 #print("healthy again")
-                self.colour = (0,200,200)
+                self.colour = (26,204,80)
                 self.health = Health.healed
 
             elif time - self.infection_time > 7*1000:
                 #print("getting sick")
-                self.colour = (255,0,0)
+                self.colour = (198,18,18)
                 self.health = Health.sick
 
             elif time - self.infection_time > 5*1000:
                 #print("getting contageous")
-                self.colour = (150,150,0)
+                self.colour = (255,239,0)
                 self.health = Health.contageous
 
 
